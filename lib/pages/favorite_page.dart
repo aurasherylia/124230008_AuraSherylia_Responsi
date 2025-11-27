@@ -209,8 +209,6 @@ class _FavoritePageState extends State<FavoritePage>
             builder: (_) => RestaurantDetailPage(id: item["id"]),
           ),
         );
-
-        // KETIKA BALIK DARI DETAIL, REFRESH FAVORITE
         loadFavorites();
       },
       child: ScaleTransition(
