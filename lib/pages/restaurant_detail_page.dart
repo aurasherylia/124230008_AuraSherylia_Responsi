@@ -1,4 +1,3 @@
-
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -62,9 +61,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
     setState(() {});
   }
 
-  bool get isFavorite =>
-      favorites.any((e) => e["id"] == restaurant?.id);
+  bool get isFavorite => favorites.any((e) => e["id"] == restaurant?.id);
 
+  ////////////////////////////////////////////////////////////////////////////
+  /// PERBAIKAN FAVORITE (TIDAK MENGUBAH UI SAMA SEKALI)
+  ////////////////////////////////////////////////////////////////////////////
   Future<void> toggleFavorite() async {
     if (restaurant == null) return;
 
@@ -73,9 +74,14 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
     final prefs = await SharedPreferences.getInstance();
     final key = "favorite_$currentUser";
 
+    // Simpan status sebelum diubah
+    bool wasFavorite = favorites.any((e) => e["id"] == restaurant!.id);
+
+    // Hapus dulu
     favorites.removeWhere((e) => e["id"] == restaurant!.id);
 
-    if (!isFavorite) {
+    // Jika sebelumnya tidak favorite → tambahkan
+    if (!wasFavorite) {
       favorites.add({
         "id": restaurant!.id,
         "name": restaurant!.name,
@@ -87,10 +93,13 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
     }
 
     await prefs.setStringList(
-        key, favorites.map((e) => jsonEncode(e)).toList());
+      key,
+      favorites.map((e) => jsonEncode(e)).toList(),
+    );
 
     setState(() {});
   }
+  ////////////////////////////////////////////////////////////////////////////
 
   Future<void> loadDetail() async {
     final raw = await ApiService.getRestaurantDetail(widget.id);
@@ -145,6 +154,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
             ),
           ),
 
+          // TOP BUTTONS
           SafeArea(
             child: Padding(
               padding:
@@ -152,11 +162,12 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // BACK BUTTON
-                  _circleBtn(Icons.arrow_back_ios_new_rounded,
-                      () => Navigator.pop(context),
-                      bg: Colors.white.withOpacity(.8),
-                      color: kPurplePrimary),
+                  _circleBtn(
+                    Icons.arrow_back_ios_new_rounded,
+                    () => Navigator.pop(context),
+                    bg: Colors.white.withOpacity(.8),
+                    color: kPurplePrimary,
+                  ),
 
                   // LOVE BUTTON
                   ScaleTransition(
@@ -176,6 +187,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
             ),
           ),
 
+          // DETAIL CONTENT
           DraggableScrollableSheet(
             minChildSize: .60,
             initialChildSize: .60,
@@ -322,7 +334,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage>
       ),
     );
   }
-
 
   Widget _section(String title) {
     return Text(

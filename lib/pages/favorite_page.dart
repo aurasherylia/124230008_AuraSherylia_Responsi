@@ -39,7 +39,6 @@ class _FavoritePageState extends State<FavoritePage>
     super.dispose();
   }
 
-
   Future<void> loadFavorites() async {
     final prefs = await SharedPreferences.getInstance();
     currentUser = prefs.getString("current_username") ?? "User";
@@ -125,7 +124,6 @@ class _FavoritePageState extends State<FavoritePage>
           children: [
             const SizedBox(height: 20),
 
-            // Title
             Text(
               "My Favorite",
               style: GoogleFonts.poppins(
@@ -203,13 +201,17 @@ class _FavoritePageState extends State<FavoritePage>
       onTapDown: (_) => _anim.reverse(),
       onTapUp: (_) => _anim.forward(),
       onTapCancel: () => _anim.forward(),
-      onTap: () {
-        Navigator.push(
+      onTap: () async {
+        // BUKA DETAIL
+        await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => RestaurantDetailPage(id: item["id"]),
           ),
         );
+
+        // KETIKA BALIK DARI DETAIL, REFRESH FAVORITE
+        loadFavorites();
       },
       child: ScaleTransition(
         scale: _anim,
